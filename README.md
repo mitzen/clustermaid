@@ -11,13 +11,21 @@ You’ll need a Kubernetes cluster to run against. You can use [KIND](https://si
 
 
 docker build -t kepung/clustermaid:latest .
+
+
 docker push
 
+
 cd config
+
 cd manager
+
 kustomize edit set image controller=kepung/clustermaid:latest
+
 cd ..
+
 kustomize build config/default | kubectl apply -f - 
+
 
 
 
