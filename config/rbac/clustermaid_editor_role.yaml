@@ -1,0 +1,24 @@
+# permissions for end users to edit clustermaids.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: clustermaid-editor-role
+rules:
+- apiGroups:
+  - webapp.cdx.foc
+  resources:
+  - clustermaids
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - webapp.cdx.foc
+  resources:
+  - clustermaids/status
+  verbs:
+  - get

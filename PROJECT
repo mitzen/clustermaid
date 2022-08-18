@@ -1,0 +1,16 @@
+domain: cdx.foc
+layout:
+- go.kubebuilder.io/v3
+projectName: clustermaid
+repo: cdx.foc/clusterMaid
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: cdx.foc
+  group: webapp
+  kind: ClusterMaid
+  path: cdx.foc/clusterMaid/api/v1
+  version: v1
+version: "3"

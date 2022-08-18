@@ -1,0 +1,6 @@
+apiVersion: webapp.cdx.foc/v1
+kind: ClusterMaid
+metadata:
+  name: clustermaid-sample
+spec:
+  # TODO(user): Add fields here
