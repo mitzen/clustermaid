@@ -8,6 +8,24 @@
 You’ll need a Kubernetes cluster to run against. You can use [KIND](https://sigs.k8s.io/kind) to get a local cluster for testing, or run against a remote cluster.
 **Note:** Your controller will automatically use the current context in your kubeconfig file (i.e. whatever cluster `kubectl cluster-info` shows).
 
+
+
+docker build -t kepung/clustermaid:latest .
+docker push
+
+cd config
+cd manager
+kustomize edit set image controller=kepung/clustermaid:latest
+cd ..
+kustomize build config/default | kubectl apply -f - 
+
+
+
+
+
+
+
+
 ### Running on the cluster
 1. Install Instances of Custom Resources:
 
