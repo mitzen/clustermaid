@@ -118,6 +118,17 @@ type ClusterMaidList struct {
 	Items           []ClusterMaid `json:"items"`
 }
 
+type ClusterMonitorList struct {
+	Items []ClusterMonitor `json:"items"`
+}
+
+type ClusterMonitor struct {
+	// Target namespace
+	TargetNamespace string `json:"namespace,omitempty"`
+	// Resource to monitor
+	ResourceToMonitor string `json:"resourceToMonitor,omitempty"`
+}
+
 func init() {
 	SchemeBuilder.Register(&ClusterMaid{}, &ClusterMaidList{})
 }

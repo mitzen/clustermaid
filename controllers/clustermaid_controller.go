@@ -69,7 +69,7 @@ func (r *ClusterMaidReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
-	var duration time.Duration = 10000000000
+	var duration time.Duration = 10000000000 // 10 seconds
 	return ctrl.Result{
 		RequeueAfter: duration,
 	}, nil
