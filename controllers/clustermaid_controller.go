@@ -18,7 +18,6 @@ package controllers
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"k8s.io/apimachinery/pkg/runtime"
@@ -27,7 +26,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	v1 "cdx.foc/clusterMaid/api/v1"
-	webappv1 "cdx.foc/clusterMaid/api/v1"
+
+	feat "cdx.foc/clusterMaid/pkg/feature"
 )
 
 type Clock interface {
@@ -57,11 +57,15 @@ func (r *ClusterMaidReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 
 	log := log.FromContext(ctx)
 
-	var cronJob v1.ClusterMaid
+	cm := feat.ClusterManager{}
 
-	fmt.Printf("Running app: %s", time.Now().String())
+	cm.Execute()
 
-	if err := r.Get(ctx, req.NamespacedName, &cronJob); err != nil {
+	var scanningActivities v1.ClusterMaid
+
+	log.Info("Running app: %s", time.Now().String())
+
+	if err := r.Get(ctx, req.NamespacedName, &scanningActivities); err != nil {
 		log.Error(err, "unable to fetch CronJob")
 		// we'll ignore not-found errors, since they can't be fixed by an immediate
 		// requeue (we'll need to wait for a new notification), and we can get them
@@ -78,6 +82,6 @@ func (r *ClusterMaidReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 // SetupWithManager sets up the controller with the Manager.
 func (r *ClusterMaidReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&webappv1.ClusterMaid{}).
+		For(&v1.ClusterMaid{}).
 		Complete(r)
 }
