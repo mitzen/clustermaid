@@ -56,22 +56,20 @@ type ClusterMaidReconciler struct {
 func (r *ClusterMaidReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 
 	log := log.FromContext(ctx)
-
-	cm := feat.ClusterManager{}
-
-	cm.Execute()
-
 	var scanningActivities v1.ClusterMaid
 
-	log.Info("Running app: %s", time.Now().String())
+	//log.Info("Running app: %s", time.Now().String())
 
 	if err := r.Get(ctx, req.NamespacedName, &scanningActivities); err != nil {
-		log.Error(err, "unable to fetch CronJob")
+		log.Error(err, "unable to fetch clustermaid crd.")
 		// we'll ignore not-found errors, since they can't be fixed by an immediate
 		// requeue (we'll need to wait for a new notification), and we can get them
 		// on deleted requests.
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
+
+	cm := feat.ClusterManager{}
+	cm.Execute()
 
 	var duration time.Duration = 10000000000 // 10 seconds
 	return ctrl.Result{

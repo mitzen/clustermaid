@@ -1,11 +1,7 @@
 package feature
 
 import (
-	"fmt"
-
 	"cdx.foc/clusterMaid/pkg/kube/util"
-	"github.com/mitzen/kubeconfig/config"
-	apiv1 "k8s.io/api/core/v1"
 )
 
 type ClusterManager struct {
@@ -22,77 +18,83 @@ const (
 
 func (i *ClusterManager) Execute() {
 
-	cfg := config.ClientConfig{}
-	restConfig := cfg.NewRestConfig()
-	clientset := cfg.NewClientSet(restConfig)
+	//cfg := config.ClientConfig{}
+	//restConfig := cfg.NewRestConfig()
+	//clientset := cfg.NewClientSet(restConfig)
 
-	nsutil := util.KubeObject{}
-	nsutil.NewKubeObject(clientset)
+	//nsutil := util.KubeObject{}
+	//nsutil.NewKubeObject(clientset)
 
 	ic := util.IstioClient{}
 
-	ic.NewIstioClient(restConfig, "")
+	ic.NewIstioClient("")
 
-	nodes, err := nsutil.ListAllNodes()
+	ic.GetRoutesConfig("httpbin-6775b46f9d-hgrmx", "default", "", "")
 
-	if err != nil {
-		fmt.Printf("Unable get nodes info.")
-	}
+	// nodes, err := nsutil.ListAllNodes()
 
-	for _, node := range nodes.Items {
+	// if err != nil {
+	// 	fmt.Printf("Unable get nodes info.")
+	// }
 
-		fmt.Printf("----------------------------------------------\n")
-		fmt.Printf("Node: %s \n", node.Name)
-		fmt.Printf("Pods: %d \n", node.Status.Capacity.Storage().ToDec().Value())
-		fmt.Printf("----------------------------------------------\n")
+	// for _, node := range nodes.Items {
 
-		pods, err := nsutil.ListAllPods(apiv1.NamespaceAll)
-		if err != nil {
-			fmt.Printf("Unable get nodes info.")
-		}
+	// 	fmt.Printf("----------------------------------------------\n")
+	// 	fmt.Printf("Node: %s \n", node.Name)
+	// 	fmt.Printf("Pods: %d \n", node.Status.Capacity.Storage().ToDec().Value())
+	// 	fmt.Printf("----------------------------------------------\n")
 
-		var (
-			totalMemoryRequested, totalCPURequested, totalCPULimit, totalMemoryLimit int64
-		)
+	// 	pods, err := nsutil.ListAllPods(apiv1.NamespaceAll)
+	// 	if err != nil {
+	// 		fmt.Printf("Unable get nodes info.")
+	// 	}
 
-		totalMemoryRequested = 0
-		totalCPURequested = 0
-		totalCPULimit = 0
-		totalMemoryLimit = 0
+	// 	var (
+	// 		totalMemoryRequested, totalCPURequested, totalCPULimit, totalMemoryLimit int64
+	// 	)
 
-		for _, pod := range pods.Items {
-			if pod.Spec.NodeName == node.Name {
+	// 	totalMemoryRequested = 0
+	// 	totalCPURequested = 0
+	// 	totalCPULimit = 0
+	// 	totalMemoryLimit = 0
 
-				fmt.Printf("Namespace: %s \n", pod.Namespace)
-				fmt.Printf("Pod name: %s \n", pod.Name)
+	// 	for _, pod := range pods.Items {
+	// 		if pod.Spec.NodeName == node.Name {
 
-				for _, container := range pod.Spec.Containers {
+	// 			fmt.Printf("Namespace: %s \n", pod.Namespace)
+	// 			fmt.Printf("Pod name: %s \n", pod.Name)
 
-					CPURequested := container.Resources.Requests.Cpu().Value()
-					MemoryRequested := container.Resources.Requests.Memory().Value()
-					CPULimit := container.Resources.Limits.Cpu().Value()
-					MemoryLimit := container.Resources.Limits.Memory().Value()
+	// 			for _, container := range pod.Spec.Containers {
 
-					fmt.Printf("Container Name: %s \n", container.Name)
-					fmt.Printf("Image Name: %s \n", container.Image)
-					fmt.Printf("Cpu request for container: %d \n", CPURequested)
-					fmt.Printf("Cpu limits for container: %d \n", CPULimit)
-					fmt.Printf("Memory request for container (M): %d \n", MemoryRequested/unitMegabytes)
-					fmt.Printf("Memory limits for container (M): %d \n", MemoryLimit/unitMegabytes)
+	// 				CPURequested := container.Resources.Requests.Cpu().Value()
+	// 				MemoryRequested := container.Resources.Requests.Memory().Value()
+	// 				CPULimit := container.Resources.Limits.Cpu().Value()
+	// 				MemoryLimit := container.Resources.Limits.Memory().Value()
 
-					totalCPURequested += CPURequested
-					totalMemoryRequested += MemoryRequested
-					totalCPULimit += CPULimit
-					totalMemoryLimit += MemoryLimit
-				}
-			}
-		}
+	// 				fmt.Printf("Container Name: %s \n", container.Name)
+	// 				fmt.Printf("Image Name: %s \n", container.Image)
+	// 				fmt.Printf("Cpu request for container: %d \n", CPURequested)
+	// 				fmt.Printf("Cpu limits for container: %d \n", CPULimit)
+	// 				fmt.Printf("Memory request for container (M): %d \n", MemoryRequested/unitMegabytes)
+	// 				fmt.Printf("Memory limits for container (M): %d \n", MemoryLimit/unitMegabytes)
 
-		fmt.Printf("Total cpu request for container: %d \n", totalCPURequested)
-		fmt.Printf("Total cpu limits for container: %d \n", totalCPULimit)
-		fmt.Printf("Total memory request for container:%d \n", totalMemoryRequested/unitMegabytes)
-		fmt.Printf("Total memory limits for container:%d \n", totalMemoryLimit/unitMegabytes)
-		fmt.Printf("Node CPU: %d \n", node.Status.Capacity.Cpu().ToDec().Value())
-		fmt.Printf("Node Memory: %d \n", node.Status.Capacity.Memory().ToDec().Value()/unitMegabytes)
-	}
+	// 				totalCPURequested += CPURequested
+	// 				totalMemoryRequested += MemoryRequested
+	// 				totalCPULimit += CPULimit
+	// 				totalMemoryLimit += MemoryLimit
+	// 			}
+	// 		}
+	// 	}
+
+	// 	fmt.Printf("Total cpu request for container: %d \n", totalCPURequested)
+	// 	fmt.Printf("Total cpu limits for container: %d \n", totalCPULimit)
+	// 	fmt.Printf("Total memory request for container:%d \n", totalMemoryRequested/unitMegabytes)
+	// 	fmt.Printf("Total memory limits for container:%d \n", totalMemoryLimit/unitMegabytes)
+	// 	fmt.Printf("Node CPU: %d \n", node.Status.Capacity.Cpu().ToDec().Value())
+	// 	fmt.Printf("Node Memory: %d \n", node.Status.Capacity.Memory().ToDec().Value()/unitMegabytes)
+	// }
+}
+
+func (i *ClusterManager) GetMetric() {
+
 }

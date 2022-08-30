@@ -28,11 +28,17 @@ type ClusterMaidSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
+	// +kubebuilder:validation:Required
 	// The schedule in Cron format, see https://en.wikipedia.org/wiki/Cron.
 	Schedule string `json:"schedule"`
 
-	//+kubebuilder:validation:Minimum=0
+	// +kubebuilder:validation:Required
+	Namespace string `json:"namespace"`
 
+	// +kubebuilder:validation:Required
+	Metric string `json:"metric"`
+
+	//+kubebuilder:validation:Minimum=0
 	// Optional deadline in seconds for starting the job if it misses scheduled
 	// time for any reason.  Missed jobs executions will be counted as failed ones.
 	// +optional

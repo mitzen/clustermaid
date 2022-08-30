@@ -48,6 +48,10 @@ spec:
                 format: int32
                 minimum: 0
                 type: integer
+              metric:
+                type: string
+              namespace:
+                type: string
               schedule:
                 description: The schedule in Cron format, see https://en.wikipedia.org/wiki/Cron.
                 type: string
@@ -70,6 +74,8 @@ spec:
                   to false.
                 type: boolean
             required:
+            - metric
+            - namespace
             - schedule
             type: object
           status:
