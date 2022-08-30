@@ -69,7 +69,8 @@ func (r *ClusterMaidReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	}
 
 	cm := feat.ClusterManager{}
-	cm.Execute()
+
+	cm.Execute(scanningActivities.Spec.Namespace)
 
 	var duration time.Duration = 10000000000 // 10 seconds
 	return ctrl.Result{

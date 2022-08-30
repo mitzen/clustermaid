@@ -9,12 +9,12 @@ import (
 
 	"github.com/mitzen/kubeconfig/config"
 	v1alpha3 "istio.io/client-go/pkg/apis/networking/v1alpha3"
-	versionedclient "istio.io/client-go/pkg/clientset/versioned"
 	"istio.io/istio/istioctl/pkg/writer/envoy/clusters"
 	"istio.io/istio/istioctl/pkg/writer/envoy/configdump"
 	"istio.io/istio/pilot/pkg/model"
 	"istio.io/istio/pkg/config/host"
 	"istio.io/istio/pkg/kube"
+	core "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -23,14 +23,13 @@ const (
 )
 
 type IstioClient struct {
-	IstioClient         *versionedclient.Clientset
+	kubeClient          kube.Client
 	namespace           string
 	IstioExtendedClient kube.CLIClient
 }
 
 func (i *IstioClient) NewIstioClient(namespace string) {
 
-	//ic, err := versionedclient.NewForConfig(config)
 	i.initializeIstioClient()
 
 	// if err != nil {
@@ -78,15 +77,15 @@ func (i *IstioClient) GetIstioPod(namespace string) string {
 }
 
 func (i *IstioClient) GetGateways() (*v1alpha3.GatewayList, error) {
-	return i.IstioClient.NetworkingV1alpha3().Gateways(i.namespace).List(context.TODO(), v1.ListOptions{})
+	return i.kubeClient.Istio().NetworkingV1alpha3().Gateways(i.namespace).List(context.TODO(), v1.ListOptions{})
 }
 
 func (i *IstioClient) GetVirtualServices() {
-	i.IstioClient.NetworkingV1alpha3().VirtualServices(i.namespace)
+	i.kubeClient.Istio().NetworkingV1alpha3().VirtualServices(i.namespace)
 }
 
 func (i *IstioClient) GetDesinationRules() {
-	i.IstioClient.NetworkingV1alpha3().DestinationRules(i.namespace)
+	i.kubeClient.Istio().NetworkingV1alpha3().DestinationRules(i.namespace)
 }
 
 func (i *IstioClient) GetListenerConfig(podName string, namespace string, address string, port uint32, outputFormat string) error {
@@ -193,6 +192,17 @@ func (i *IstioClient) GetClusterConfig(podName string, namespace string, fqdn st
 	}
 }
 
+func (i *IstioClient) GetPods() *core.PodList {
+
+	pods, err := i.kubeClient.Kube().CoreV1().Pods(i.namespace).List(context.TODO(), v1.ListOptions{})
+
+	if err != nil {
+		fmt.Printf("unable to get pods in a %s namespace", i.namespace)
+	}
+	return pods
+
+}
+
 func (i *IstioClient) setupPodClustersWriter(podName, podNamespace string, out io.Writer) (*clusters.ConfigWriter, error) {
 
 	path := "clusters?format=json"
@@ -213,9 +223,17 @@ func setupClustersEnvoyConfigWriter(debug []byte, out io.Writer) (*clusters.Conf
 }
 
 func (i *IstioClient) initializeIstioClient() {
+
+	kubeClient, err := kube.NewClient(kube.BuildClientCmd("", ""))
+	i.kubeClient = kubeClient
+
+	if err != nil {
+		fmt.Println("Unable to create istio client")
+	}
+
 	client, err := kube.NewCLIClient(kube.BuildClientCmd("", ""), "")
 	if err != nil {
-		fmt.Println("Unable to create istio extended client")
+		fmt.Println("Unable to create istio EXTENDED client")
 	}
 
 	i.IstioExtendedClient = client

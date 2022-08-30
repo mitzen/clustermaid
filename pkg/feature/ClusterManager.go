@@ -16,7 +16,7 @@ const (
 // Get pods memory and cpu request and limits
 // Total it all up
 
-func (i *ClusterManager) Execute() {
+func (i *ClusterManager) Execute(namespace string) {
 
 	//cfg := config.ClientConfig{}
 	//restConfig := cfg.NewRestConfig()
@@ -24,12 +24,18 @@ func (i *ClusterManager) Execute() {
 
 	//nsutil := util.KubeObject{}
 	//nsutil.NewKubeObject(clientset)
+	if namespace == "" {
+		namespace = "default"
+	}
 
 	ic := util.IstioClient{}
+	ic.NewIstioClient(namespace)
 
-	ic.NewIstioClient("")
+	l := ic.GetPods()
 
-	ic.GetRoutesConfig("httpbin-6775b46f9d-hgrmx", "default", "", "")
+	for _, pod := range l.Items {
+		ic.GetRoutesConfig(pod.Name, namespace, "", "summary")
+	}
 
 	// nodes, err := nsutil.ListAllNodes()
 
